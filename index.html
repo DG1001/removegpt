@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Rich-Text Cleaner & Copier</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 35px;
+            box-sizing: border-box;
+            border: 1px solid #dddfe2;
+        }
+        h1 {
+            color: #1d2129;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 26px;
+            font-weight: 700;
+        }
+        p.instructions {
+            text-align: center;
+            color: #606770;
+            margin-bottom: 30px;
+            font-size: 17px;
+        }
+        #editor {
+            width: 100%;
+            min-height: 300px;
+            border: 2px solid #ccd0d5;
+            border-radius: 8px;
+            padding: 18px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #f5f6f7;
+            resize: vertical;
+            overflow: auto;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        #editor:focus {
+            outline: none;
+            border-color: #1877f2;
+            box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.2);
+            background-color: #fff;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #fff;
+            background: linear-gradient(135deg, #1877f2 0%, #3b5998 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .info-box {
+            margin-top: 35px;
+            padding: 20px;
+            background-color: #e7f3ff;
+            border-left: 5px solid #1877f2;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .info-box strong {
+            color: #1d2129;
+        }
+        .info-box code {
+            background-color: #d0e4ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Rich-Text Cleaner</h1>
+        <p class="instructions">
+            Fügen Sie Ihren formatierten Text ein. Ein Klick reinigt ihn und kopiert das Ergebnis direkt in die Zwischenablage.
+        </p>
+        
+        <div id="editor" contenteditable="true" spellcheck="false">
+            <p>Fügen Sie hier Ihren Text ein, der <b>unsichtbare</b> Wasserzeichen wie zum Beispiel den Soft-Hyphen (­) oder den Narrow-No-Break-Space ( ) enthält. Auch <i>Formatierungen</i> und <span style="color: #db3444;">Farben</span> bleiben nach dem Bereinigen erhalten.</p>
+        </div>
+
+        <div class="button-container">
+            <button id="clean-copy-btn">✨ Bereinigen & Kopieren</button>
+        </div>
+        
+        <div class="info-box">
+            <p><strong>Wie es funktioniert:</strong> Dieses Tool arbeitet direkt auf dem HTML-Code Ihres Textes. Es sucht und ersetzt eine umfassende Liste problematischer Unicode-Zeichen (z.B. <code>U+00AD</code>, <code>U+202F</code>, <code>U+00A0</code>), während alle Formatierungs-Tags (<code>&lt;b&gt;</code>, <code>&lt;i&gt;</code>, etc.) unangetastet bleiben.</p>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const cleanCopyBtn = document.getElementById('clean-copy-btn');
+
+        // Die umfassende Liste von Zeichen, die ersetzt werden sollen.
+        // Diese basiert auf Ihrem funktionierenden Beispiel.
+        const replacements = {
+            // ----- Problematische Leerzeichen ersetzen -----
+            '\u00A0': ' ', // No-Break Space
+            '\u202F': ' ', // Narrow No-Break Space
+            
+            // ----- Unsichtbare Steuerzeichen entfernen -----
+            '\u00AD': '',  // Soft Hyphen
+            '\u200B': '',  // Zero-Width Space
+            '\u200C': '',  // Zero-Width Non-Joiner
+            '\u200D': '',  // Zero-Width Joiner
+            '\uFEFF': '',  // Byte Order Mark
+            '\u2060': '',  // Word Joiner
+            '\u200E': '',  // Left-to-Right Mark
+            '\u200F': '',  // Right-to-Left Mark
+            '\u061C': '',  // Arabic Letter Mark
+        };
+        
+        cleanCopyBtn.addEventListener('click', () => {
+            // 1. Hole den gesamten HTML-Inhalt aus dem Editor
+            let htmlContent = editor.innerHTML;
+            let changesMade = false;
+
+            // 2. Führe die Ersetzungen auf dem HTML-String durch
+            for (const [charToFind, replacement] of Object.entries(replacements)) {
+                const regex = new RegExp(charToFind, 'g');
+                if (htmlContent.match(regex)) {
+                    htmlContent = htmlContent.replace(regex, replacement);
+                    changesMade = true;
+                }
+            }
+            
+            // Optional: Mehrfache Leerzeichen, die durch Ersetzungen entstehen könnten, bereinigen.
+            // Dies ist sicherer als komplexe Regex, da es nur auf sichtbare Leerzeichen wirkt.
+            htmlContent = htmlContent.replace(/&nbsp;/g, ' ').replace(/ {2,}/g, ' ');
+
+            // 3. Setze den bereinigten HTML-Inhalt zurück in den Editor
+            editor.innerHTML = htmlContent;
+
+            // 4. Kopiere den bereinigten Rich Text in die Zwischenablage
+            try {
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const clipboardItem = new ClipboardItem({ 'text/html': blob });
+
+                navigator.clipboard.write([clipboardItem]).then(() => {
+                    // Visuelles Feedback für den Benutzer
+                    const originalText = cleanCopyBtn.innerHTML;
+                    cleanCopyBtn.innerHTML = '✅ Formatiert kopiert!';
+                    cleanCopyBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #218838 100%)';
+                    
+                    setTimeout(() => {
+                        cleanCopyBtn.innerHTML = originalText;
+                        cleanCopyBtn.style.background = 'linear-gradient(135deg, #1877f2 0%, #3b5998 100%)';
+                    }, 2500);
+                });
+            } catch (error) {
+                console.error('Kopieren fehlgeschlagen: ', error);
+                alert('Das Kopieren des formatierten Textes ist fehlgeschlagen. Ihr Browser unterstützt diese Funktion möglicherweise nicht.');
+            }
+        });
+    </script>
+
+</body>
+</html>
