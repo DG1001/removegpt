@@ -53,6 +53,16 @@
             resize: vertical;
             overflow: auto;
             transition: border-color 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        #editor:empty:not(:focus)::before {
+            content: "Fügen Sie hier Ihren Text ein. Unsichtbare Wasserzeichen (z.B. Soft-Hyphen) werden entfernt, während Formatierungen und Farben erhalten bleiben.";
+            color: #999;
+            pointer-events: none;
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            right: 18px;
         }
         #editor:focus {
             outline: none;
@@ -112,9 +122,7 @@
             Fügen Sie Ihren formatierten Text ein. Ein Klick reinigt ihn und kopiert das Ergebnis direkt in die Zwischenablage.
         </p>
         
-        <div id="editor" contenteditable="true" spellcheck="false">
-            <p>Fügen Sie hier Ihren Text ein, der <b>unsichtbare</b> Wasserzeichen wie zum Beispiel den Soft-Hyphen (­) oder den Narrow-No-Break-Space ( ) enthält. Auch <i>Formatierungen</i> und <span style="color: #db3444;">Farben</span> bleiben nach dem Bereinigen erhalten.</p>
-        </div>
+        <div id="editor" contenteditable="true" spellcheck="false"></div>
 
         <div class="button-container">
             <button id="clean-copy-btn">✨ Bereinigen & Kopieren</button>
