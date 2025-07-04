@@ -1,11 +1,11 @@
 const CACHE_NAME = 'text-cleaner-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/logo.png',
-  '/icon-192.png',
-  '/icon-512.png'
+  '/removegpt/',
+  '/removegpt/index.html',
+  '/removegpt/manifest.json',
+  '/removegpt/logo.png',
+  '/removegpt/icon-192.png',
+  '/removegpt/icon-512.png'
 ];
 
 // Install event - cache resources

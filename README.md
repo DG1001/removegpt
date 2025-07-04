@@ -18,6 +18,9 @@ The tool provides a content-editable `div` where a user can paste rich text. Whe
 
 ## How to use
 
+**Online:** Visit https://dg1001.github.io/removegpt/
+
+**Local:**
 1.  Open the `index.html` file in a modern web browser.
 2.  Paste your rich text content into the editor area.
 3.  Click the "✨ Bereinigen & Kopieren" button.

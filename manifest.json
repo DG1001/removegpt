@@ -1,8 +1,8 @@
 {
-  "name": "Rich-Text Cleaner & Copier",
-  "short_name": "Text Cleaner",
+  "name": "RemoveGPT",
+  "short_name": "RemoveGPT",
   "description": "Clean rich text content from unwanted invisible characters while preserving formatting",
-  "start_url": "/",
+  "start_url": "/removegpt/",
   "display": "standalone",
   "background_color": "#f0f2f5",
   "theme_color": "#1877f2",
