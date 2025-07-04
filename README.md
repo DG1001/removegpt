@@ -1,5 +1,9 @@
 # Rich-Text Cleaner & Copier
 
+<p align="center">
+  <img src="logo.png" alt="Rich-Text Cleaner Logo" width="200" height="200">
+</p>
+
 This is a simple, single-file web-based tool to clean rich text content from unwanted invisible characters while preserving the original formatting.
 
 ## What it does
