@@ -1,4 +1,4 @@
-const CACHE_NAME = 'text-cleaner-v1';
+const CACHE_NAME = 'text-cleaner-v2';
 const urlsToCache = [
   '/removegpt/',
   '/removegpt/index.html',
@@ -17,6 +17,8 @@ self.addEventListener('install', function(event) {
         return cache.addAll(urlsToCache);
       })
   );
+  // Force the waiting service worker to become the active service worker
+  self.skipWaiting();
 });
 
 // Fetch event - serve from cache when offline
@@ -46,6 +48,9 @@ self.addEventListener('activate', function(event) {
           }
         })
       );
+    }).then(function() {
+      // Force the waiting service worker to become the active service worker
+      return self.clients.claim();
     })
   );
 });
